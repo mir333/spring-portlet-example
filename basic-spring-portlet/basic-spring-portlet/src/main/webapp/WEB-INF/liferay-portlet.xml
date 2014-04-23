@@ -5,6 +5,7 @@
     <portlet>
         <portlet-name>BasicSpringPortlet</portlet-name>
         <instanceable>false</instanceable>
+        <requires-namespaced-parameters>false</requires-namespaced-parameters>
         <header-portlet-css>/css/main.css</header-portlet-css>
         <header-portlet-javascript>/js/main.js</header-portlet-javascript>
     </portlet>
