@@ -13,4 +13,6 @@ package eu.ibacz.sample.portlet.bascispring;
  */
 public class BasicSpringPortletConstants {
     public static final String MAIN_VIEW = "bascispring/view";
+    public static final String TEST_ACTION = "testAction";
+    public static final String NAME_PARAM = "name";
 }
