@@ -5,6 +5,7 @@ import eu.ibacz.sample.portlet.util.JodaDateEditor;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -26,6 +27,9 @@ import static eu.ibacz.sample.portlet.bascispring.BasicSpringPortletConstants.*;
 @RequestMapping("VIEW")
 public class BasicSpringPortletViewController {
     protected final Logger LOG = Logger.getLogger(BasicSpringPortletViewController.class);
+
+    @Autowired
+    private PersonPtoValidator personPtoValidator;
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -54,15 +58,17 @@ public class BasicSpringPortletViewController {
             BindingResult result,
             ActionResponse response) {
         LOG.warn("Processing person " + personPto);
-
-        response.setRenderParameter(PARAM_VIEW, GREETING);
+        personPtoValidator.validate(personPto,result);
+        if (!result.hasErrors()) {
+            response.setRenderParameter(PARAM_VIEW, GREETING);
+        }
     }
 
     private Integer daysToBirthday(DateTime dateOfBirth) {
-        DateTime now = (new DateTime()).withTimeAtStartOfDay();
+        DateTime now = DateTime.now().withTimeAtStartOfDay();
         int year = now.getYear();
         DateTime birthday = dateOfBirth.withYear(year);
-        if (birthday.isBeforeNow()) {
+        if (birthday.isBefore(now)) {
             birthday = birthday.plusYears(1);
         }
         return Days.daysBetween(now, birthday).getDays();

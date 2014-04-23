@@ -21,6 +21,7 @@
 <c:set var="ns"><portlet:namespace/></c:set>
 <c:set var="contextPath"><%=request.getContextPath()%></c:set>
 <c:set var="imagePath"><%=themeDisplay.getPathImage()%></c:set>
+<c:set var="errorClass" value="portlet-msg-error" />
 
 <%--
 <script type="text/javascript" language="JavaScript">

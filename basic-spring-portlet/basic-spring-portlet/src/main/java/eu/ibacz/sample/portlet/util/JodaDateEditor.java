@@ -30,7 +30,7 @@ public class JodaDateEditor extends PropertyEditorSupport {
         DateTime date = (DateTime) this.getValue();
         if (date != null) {
             return dtf.print(date);
-        }else{
+        } else {
             return null;
         }
 
@@ -38,6 +38,8 @@ public class JodaDateEditor extends PropertyEditorSupport {
 
     @Override
     public void setAsText(String text) throws IllegalArgumentException {
-        setValue(dtf.parseDateTime(text));
+        if (text != null && !text.trim().isEmpty()){
+            setValue(dtf.parseDateTime(text));
+        }
     }
 }

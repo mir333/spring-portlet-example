@@ -11,10 +11,12 @@
     <p>
         <form:label path="name" for="${ns}name"><spring:message code="basicspring-form-name"/></form:label>
         <form:input path="name" id="${ns}name"/>
+        <form:errors path="name"  element="span" cssClass="${errorClass}"/>
     </p>
     <p>
         <form:label path="dateOfBirth" for="${ns}dateOfBirth"><spring:message code="basicspring-form-date-of-birth"/></form:label>
-        <form:input path="dateOfBirth" id="${ns}dateOfBirth"/>
+        <form:input path="dateOfBirth" id="${ns}dateOfBirth" placeholder="<%=DATE_TIME_PATTERN%>"/>
+        <form:errors path="dateOfBirth"  element="span" cssClass="${errorClass}"/>
     </p>
 
     <input type="submit" value="<spring:message code="basicspring-submit"/>" />
