@@ -10,7 +10,7 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <liferay.auto.deploy.dir>/opt/liferay/deploy</liferay.auto.deploy.dir>
+        <liferay.auto.deploy.dir>/opt/LifeRay/liferay-portal-6.2-ce-ga2/deploy</liferay.auto.deploy.dir>
 
         <liferay.maven.plugin.version>6.2.1</liferay.maven.plugin.version>
         <liferay.version>6.2.1</liferay.version>
@@ -91,6 +91,12 @@
             <artifactId>spring-webmvc-portlet</artifactId>
             <version>${spring.version}</version>
         </dependency>
+        <dependency>
+            <groupId>jstl</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+        </dependency>
+
 
         <!-- Web app dependencies -->
         <dependency>
