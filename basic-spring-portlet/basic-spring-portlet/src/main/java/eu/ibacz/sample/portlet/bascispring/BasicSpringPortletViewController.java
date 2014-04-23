@@ -2,6 +2,7 @@ package eu.ibacz.sample.portlet.bascispring;
 
 import eu.ibacz.sample.portlet.bascispring.pto.PersonPto;
 import eu.ibacz.sample.portlet.util.JodaDateEditor;
+import org.apache.log4j.LogMF;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
@@ -38,6 +39,7 @@ public class BasicSpringPortletViewController {
 
     @RenderMapping
     public String question(Model model) {
+        LogMF.debug(LOG,"Showing form for user.",null);
         if (!model.containsAttribute(PERSON_PTO)) {
             model.addAttribute(PERSON_PTO, new PersonPto());
         }
@@ -46,6 +48,7 @@ public class BasicSpringPortletViewController {
 
     @RenderMapping(params = PARAM_VIEW + "=" + GREETING)
     public String greeting(@ModelAttribute(PERSON_PTO) PersonPto personPto, Model model) {
+        LogMF.debug(LOG,"Showing result for user {0}.",personPto);
         Integer days = daysToBirthday(personPto.getDateOfBirth());
         model.addAttribute(DAYS_TO_BIRTHDAY_PARAM, days);
         return GREETING_VIEW;
@@ -57,7 +60,7 @@ public class BasicSpringPortletViewController {
             @ModelAttribute(PERSON_PTO) PersonPto personPto,
             BindingResult result,
             ActionResponse response) {
-        LOG.warn("Processing person " + personPto);
+        LogMF.info(LOG,"Processing person {0}",personPto);
         personPtoValidator.validate(personPto,result);
         if (!result.hasErrors()) {
             response.setRenderParameter(PARAM_VIEW, GREETING);
