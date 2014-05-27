@@ -31,7 +31,397 @@
         <hr>
 
         <section id="main_content">
-          <p>This repository contains a simple spring portlet. It is intended as a step by step turoria.</p>
+          <p>This repository contains a simple spring portlet. It is intended as a step by step tutorial. </p>
+
+<ol>
+<li>Create a new maven web application project. Maven archetype can be used to generate the application (e.g. com.liferay.maven.archetypes:liferay-portlet-archetype). <code>mvn archetype:generate</code>
+</li>
+<li>
+<p>Add dependencies on Spring into pom.xml.</p>
+
+<pre><code>&lt;dependency&gt;
+  &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+  &lt;artifactId&gt;spring-webmvc-portlet&lt;/artifactId&gt;
+  &lt;version&gt;3.2.6.RELEASE&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+</li>
+<li>
+<p>Insert spring initalization code inot web.xml.</p>
+
+<ul>
+<li>Insert spring context listener</li>
+</ul>
+<pre><code>    &lt;listener&gt;
+        &lt;listener-class&gt;org.springframework.web.context.ContextLoaderListener&lt;/listener-class&gt;
+    &lt;/listener&gt;
+</code></pre>
+
+<ul>
+<li>Specify the application spring configuration file location</li>
+</ul>
+<pre><code>    &lt;context-param&gt;
+        &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+        &lt;param-value&gt;/WEB-INF/spring-context/portlet-application-context.xml&lt;/param-value&gt;
+    &lt;/context-param&gt;
+</code></pre>
+
+<ul>
+<li>Add servlet for view processing</li>
+</ul>
+<pre><code>    &lt;servlet&gt;
+        &lt;servlet-name&gt;ViewRendererServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;org.springframework.web.servlet.ViewRendererServlet&lt;/servlet-class&gt;
+        &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+    &lt;/servlet&gt;
+
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;ViewRendererServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/WEB-INF/servlet/view&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+</code></pre>
+</li>
+<li>Create the application configuration file <em>portlet-application-context.xml</em>.</li>
+<li>
+<p>Activate annotation and configure view resolver in main context file.</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd"&gt;
+
+    &lt;!--Enables @Autowired annotation--&gt;
+    &lt;context:annotation-config/&gt;
+
+    &lt;!-- Spring MVC VIEW Configuration --&gt;
+    &lt;bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver"&gt;
+        &lt;property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/&gt;
+        &lt;property name="contentType" value="text/html;charset=UTF-8" /&gt;
+        &lt;property name="prefix" value="/WEB-INF/jsp/" /&gt;
+        &lt;property name="suffix" value=".jsp" /&gt;
+    &lt;/bean&gt;
+&lt;/beans&gt;
+</code></pre>
+</li>
+<li>
+<p>Define spring portlet</p>
+
+<ul>
+<li>Define portlet in portlet.xml</li>
+</ul>
+<pre><code>  &lt;portlet&gt;
+      &lt;portlet-name&gt;BasicSpringPortlet&lt;/portlet-name&gt;
+      &lt;portlet-class&gt;org.springframework.web.portlet.DispatcherPortlet&lt;/portlet-class&gt;
+      &lt;init-param&gt;
+          &lt;name&gt;contextConfigLocation&lt;/name&gt;
+          &lt;value&gt;/WEB-INF/spring-context/portlet/basic-spring-portlet.xml&lt;/value&gt;
+      &lt;/init-param&gt;
+      &lt;supports&gt;
+          &lt;mime-type&gt;text/html&lt;/mime-type&gt;
+          &lt;portlet-mode&gt;VIEW&lt;/portlet-mode&gt;
+      &lt;/supports&gt;
+      &lt;supported-locale&gt;en&lt;/supported-locale&gt;
+      &lt;supported-locale&gt;cs&lt;/supported-locale&gt;
+      &lt;resource-bundle&gt;content.basic-spring-portlet&lt;/resource-bundle&gt;
+  &lt;/portlet&gt;
+</code></pre>
+
+<ul>
+<li>Configure portlet in liferay-portlet.xml</li>
+</ul>
+<pre><code>  &lt;portlet&gt;
+      &lt;portlet-name&gt;BasicSpringPortlet&lt;/portlet-name&gt;
+      &lt;instanceable&gt;false&lt;/instanceable&gt;
+      &lt;header-portlet-css&gt;/css/main.css&lt;/header-portlet-css&gt;
+      &lt;header-portlet-javascript&gt;/js/main.js&lt;/header-portlet-javascript&gt;
+  &lt;/portlet&gt;
+</code></pre>
+
+<ul>
+<li>
+<p>Configure portlet in liferay-display.xml</p>
+
+<pre><code>&lt;category name="category.sample"&gt;
+      &lt;portlet id="BasicSpringPortlet" /&gt;
+&lt;/category&gt;
+</code></pre>
+</li>
+<li>
+<p>Create portlet spring context file</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!--suppress SpringFacetInspection --&gt;
+&lt;beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"&gt;
+
+    &lt;!-- Spring MVC Message Source --&gt;
+    &lt;bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource"&gt;
+        &lt;property name="useCodeAsDefaultMessage" value="true"/&gt;
+        &lt;property name="basenames"&gt;
+            &lt;list&gt;
+                &lt;value&gt;content.basic-spring-portlet&lt;/value&gt;
+            &lt;/list&gt;
+        &lt;/property&gt;
+    &lt;/bean&gt;
+
+&lt;/beans&gt;
+</code></pre>
+</li>
+<li>Create resource bundles</li>
+</ul>
+</li>
+<li>
+<p>Create Spring Controller</p>
+
+<div class="highlight highlight-java"><pre><span class="kn">package</span> <span class="n">eu</span><span class="o">.</span><span class="na">ibacz</span><span class="o">.</span><span class="na">sample</span><span class="o">.</span><span class="na">portlet</span><span class="o">.</span><span class="na">bascispring</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Controller</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestMapping</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.portlet.bind.annotation.RenderMapping</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm">* This class is base controller for VIEW mode.</span>
+<span class="cm">*/</span>
+<span class="nd">@Controller</span>
+<span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"VIEW"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">BasicSpringPortletViewController</span> <span class="o">{</span>
+
+    <span class="nd">@RenderMapping</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">doView</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">BasicSpringPortletConstants</span><span class="o">.</span><span class="na">MAIN_VIEW</span><span class="o">;</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</pre></div>
+</li>
+<li>Create view - <em>view.jsp</em><br>
+</li>
+<li>
+<p>Add component scan to spring portlet configuration.</p>
+
+<pre><code>&lt;context:component-scan base-package="eu.ibacz.sample.portlet.bascispring.**"/&gt;
+</code></pre>
+</li>
+<li>
+<p>Add a simple form to jsp file.</p>
+
+<div class="highlight highlight-jsp"><pre><span class="k">&lt;%@</span> <span class="n">page</span> <span class="n">import</span><span class="o">=</span><span class="s">"eu.ibacz.sample.portlet.bascispring.BasicSpringPortletConstants"</span> <span class="k">%&gt;</span>
+<span class="k">&lt;%@</span><span class="n">page</span> <span class="n">contentType</span><span class="o">=</span><span class="s">"text/html"</span> <span class="n">pageEncoding</span><span class="o">=</span><span class="s">"UTF-8"</span><span class="k">%&gt;</span>
+
+<span class="k">&lt;%@</span> <span class="n">taglib</span> <span class="n">prefix</span><span class="o">=</span><span class="s">"c"</span> <span class="n">uri</span><span class="o">=</span><span class="s">"http://java.sun.com/jsp/jstl/core"</span> <span class="k">%&gt;</span>
+
+<span class="k">&lt;%@</span> <span class="n">taglib</span> <span class="n">prefix</span><span class="o">=</span><span class="s">"portlet"</span> <span class="n">uri</span><span class="o">=</span><span class="s">"http://java.sun.com/portlet_2_0"</span> <span class="k">%&gt;</span>
+
+<span class="k">&lt;%@</span> <span class="n">taglib</span> <span class="n">prefix</span><span class="o">=</span><span class="s">"spring"</span> <span class="n">uri</span><span class="o">=</span><span class="s">"http://www.springframework.org/tags"</span> <span class="k">%&gt;</span>
+<span class="k">&lt;%@</span> <span class="n">taglib</span> <span class="n">prefix</span><span class="o">=</span><span class="s">"form"</span> <span class="n">uri</span><span class="o">=</span><span class="s">"http://www.springframework.org/tags/form"</span><span class="k">%&gt;</span>
+
+<span class="nt">&lt;c:set</span> <span class="na">var=</span><span class="s">"ns"</span><span class="nt">&gt;&lt;portlet:namespace/&gt;&lt;/c:set&gt;</span>
+
+<span class="nt">&lt;spring:message</span> <span class="na">code=</span><span class="s">"basicspring-question"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;br/&gt;</span>
+<span class="nt">&lt;portlet:actionURL</span> <span class="na">var=</span><span class="s">"actionUrl"</span> <span class="na">name=</span><span class="s">"</span><span class="k">&lt;%=</span><span class="n">BasicSpringPortletConstants</span><span class="o">.</span><span class="na">TEST_ACTION</span><span class="k">%&gt;</span><span class="s">"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;form</span> <span class="na">action=</span><span class="s">"${actionUrl}"</span> <span class="na">method=</span><span class="s">"POST"</span><span class="nt">&gt;</span>
+   <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"text"</span> <span class="na">name=</span><span class="s">"${ns}</span><span class="k">&lt;%=</span><span class="n">BasicSpringPortletConstants</span><span class="o">.</span><span class="na">NAME_PARAM</span><span class="k">%&gt;</span><span class="s">"</span><span class="nt">&gt;</span>
+   <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"submit"</span> <span class="na">value=</span><span class="s">"&lt;spring:message code="</span><span class="err">basicspring-submit"</span><span class="nt">/&gt;</span>" /&gt;
+<span class="nt">&lt;/form&gt;</span>
+</pre></div>
+</li>
+<li>
+<p>Handle the form data in controler.</p>
+
+<div class="highlight highlight-java"><pre>   <span class="nd">@ActionMapping</span><span class="o">(</span><span class="n">BasicSpringPortletConstants</span><span class="o">.</span><span class="na">TEST_ACTION</span><span class="o">)</span>
+   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doAction</span><span class="o">(</span><span class="nd">@RequestParam</span><span class="o">(</span><span class="n">BasicSpringPortletConstants</span><span class="o">.</span><span class="na">NAME_PARAM</span><span class="o">)</span> <span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+       <span class="n">LOG</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">"I've got name "</span> <span class="o">+</span> <span class="n">name</span><span class="o">);</span>
+   <span class="o">}</span>
+
+</pre></div>
+</li>
+<li>
+<p>Add a greetings view.</p>
+
+<ul>
+<li>Add additional render method to the controller</li>
+</ul>
+<div class="highlight highlight-java"><pre>  <span class="nd">@RenderMapping</span><span class="o">(</span><span class="n">params</span> <span class="o">=</span> <span class="n">PARAM_VIEW</span> <span class="o">+</span> <span class="s">"="</span> <span class="o">+</span> <span class="n">GREETING</span><span class="o">)</span>
+  <span class="kd">public</span> <span class="n">String</span> <span class="nf">greeting</span><span class="o">(</span>
+          <span class="nd">@RequestParam</span><span class="o">(</span><span class="n">NAME_PARAM</span><span class="o">)</span> <span class="n">String</span> <span class="n">name</span><span class="o">,</span>
+          <span class="n">Model</span> <span class="n">model</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">model</span><span class="o">.</span><span class="na">addAttribute</span><span class="o">(</span><span class="n">NAME_PARAM</span><span class="o">,</span><span class="n">name</span><span class="o">);</span>
+      <span class="k">return</span> <span class="n">GREETING_VIEW</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="nd">@ActionMapping</span><span class="o">(</span><span class="n">TEST_ACTION</span><span class="o">)</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doAction</span><span class="o">(</span><span class="n">ActionRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">ActionResponse</span> <span class="n">response</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">LOG</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">"Processing name."</span><span class="o">);</span>
+
+      <span class="c1">//order if these lines is important!</span>
+      <span class="n">response</span><span class="o">.</span><span class="na">setRenderParameters</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="na">getParameterMap</span><span class="o">());</span>
+      <span class="n">response</span><span class="o">.</span><span class="na">setRenderParameter</span><span class="o">(</span><span class="n">PARAM_VIEW</span><span class="o">,</span> <span class="n">GREETING</span><span class="o">);</span>
+  <span class="o">}</span>
+</pre></div>
+
+<ul>
+<li>Add <em>greetings.jsp</em>
+</li>
+</ul>
+<pre><code>&lt;%@page contentType="text/html" pageEncoding="UTF-8" %&gt;
+&lt;%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %&gt;
+&lt;%@ taglib prefix="portlet" uri="http://java.sun.com/portlet_2_0" %&gt;
+
+&lt;%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %&gt;
+
+&lt;spring:message code="basicspring-greeting"/&gt;&amp;nbsp;&lt;b&gt;&lt;c:out value="${name}"/&gt;&lt;/b&gt;!!!
+&lt;br/&gt;
+&lt;a href="&lt;portlet:renderURL /&gt;"&gt;&lt;spring:message code="basicspring-back"/&gt; &lt;/a&gt;
+</code></pre>
+</li>
+<li>
+<p>Create transfer object <em>PersonPto</em></p>
+
+<div class="highlight highlight-java"><pre> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">PersonPto</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">DateTime</span> <span class="n">dateOfBirth</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="n">DateTime</span> <span class="nf">getDateOfBirth</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">dateOfBirth</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setDateOfBirth</span><span class="o">(</span><span class="n">DateTime</span> <span class="n">dateOfBirth</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">dateOfBirth</span> <span class="o">=</span> <span class="n">dateOfBirth</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="s">"PersonPto{"</span> <span class="o">+</span>
+                <span class="s">"dateOfBirth="</span> <span class="o">+</span> <span class="n">dateOfBirth</span> <span class="o">+</span>
+                <span class="s">", name='"</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="sc">'\''</span> <span class="o">+</span>
+                <span class="s">"} "</span> <span class="o">+</span> <span class="kd">super</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</li>
+<li>
+<p>Switch from parameters to model attribute.</p>
+
+<div class="highlight highlight-java"><pre><span class="nd">@ActionMapping</span><span class="o">(</span><span class="n">TEST_ACTION</span><span class="o">)</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doAction</span><span class="o">(</span>
+          <span class="nd">@ModelAttribute</span><span class="o">(</span><span class="n">PERSON_PTO</span><span class="o">)</span> <span class="n">PersonPto</span> <span class="n">personPto</span><span class="o">,</span>
+          <span class="n">BindingResult</span> <span class="n">result</span><span class="o">,</span>
+          <span class="n">ActionResponse</span> <span class="n">response</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">LOG</span><span class="o">.</span><span class="na">warn</span><span class="o">(</span><span class="s">"Processing person "</span> <span class="o">+</span> <span class="n">personPto</span><span class="o">);</span>
+
+      <span class="n">response</span><span class="o">.</span><span class="na">setRenderParameter</span><span class="o">(</span><span class="n">PARAM_VIEW</span><span class="o">,</span> <span class="n">GREETING</span><span class="o">);</span>
+  <span class="o">}</span>
+</pre></div>
+</li>
+<li>
+<p>Register InitBinder for joda time.</p>
+
+<div class="highlight highlight-java"><pre>   <span class="nd">@InitBinder</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">initBinder</span><span class="o">(</span><span class="n">WebDataBinder</span> <span class="n">binder</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">binder</span><span class="o">.</span><span class="na">registerCustomEditor</span><span class="o">(</span><span class="n">DateTime</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="n">JodaDateEditor</span><span class="o">(</span><span class="n">DATE_TIME_PATTERN</span><span class="o">));</span>
+  <span class="o">}</span>
+</pre></div>
+</li>
+<li>
+<p>Change the simple form to spring form.</p>
+
+<div class="highlight highlight-jsp"><pre><span class="nt">&lt;portlet:actionURL</span> <span class="na">var=</span><span class="s">"actionUrl"</span> <span class="na">name=</span><span class="s">"</span><span class="k">&lt;%=</span><span class="n">TEST_ACTION</span><span class="k">%&gt;</span><span class="s">"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;form:form</span> <span class="na">action=</span><span class="s">"${actionUrl}"</span> <span class="na">method=</span><span class="s">"POST"</span> <span class="na">modelAttribute=</span><span class="s">"</span><span class="k">&lt;%=</span><span class="n">PERSON_PTO</span><span class="k">%&gt;</span><span class="s">"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;p&gt;</span>
+    <span class="nt">&lt;form:label</span> <span class="na">path=</span><span class="s">"name"</span> <span class="na">for=</span><span class="s">"${ns}name"</span><span class="nt">&gt;&lt;spring:message</span> <span class="na">code=</span><span class="s">"basicspring-form-name"</span><span class="nt">/&gt;&lt;/form:label&gt;</span>
+    <span class="nt">&lt;form:input</span> <span class="na">path=</span><span class="s">"name"</span> <span class="na">id=</span><span class="s">"${ns}name"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/p&gt;</span>
+<span class="nt">&lt;p&gt;</span>
+    <span class="nt">&lt;form:label</span> <span class="na">path=</span><span class="s">"dateOfBirth"</span> <span class="na">for=</span><span class="s">"${ns}dateOfBirth"</span><span class="nt">&gt;&lt;spring:message</span> <span class="na">code=</span><span class="s">"basicspring-form-date-of-birth"</span><span class="nt">/&gt;&lt;/form:label&gt;</span>
+    <span class="nt">&lt;form:input</span> <span class="na">path=</span><span class="s">"dateOfBirth"</span> <span class="na">id=</span><span class="s">"${ns}dateOfBirth"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/p&gt;</span>
+
+<span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"submit"</span> <span class="na">value=</span><span class="s">"&lt;spring:message code="</span><span class="err">basicspring-submit"</span><span class="nt">/&gt;</span>" /&gt;
+<span class="nt">&lt;/form:form&gt;</span>
+
+</pre></div>
+</li>
+<li>
+<p>Calculate days till birthday.</p>
+
+<div class="highlight highlight-jsp"><pre>   private Integer daysToBirthday(DateTime dateOfBirth) {
+      DateTime now = (new DateTime()).withTimeAtStartOfDay();
+      int year = now.getYear();
+      DateTime birthday = dateOfBirth.withYear(year);
+      if (birthday.isBeforeNow()) {
+          birthday = birthday.plusYears(1);
+      }
+      return Days.daysBetween(now, birthday).getDays();
+  }
+</pre></div>
+</li>
+<li>
+<p>Add validation</p>
+
+<ul>
+<li>Create Validator</li>
+</ul>
+<div class="highlight highlight-java"><pre> <span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">PersonPtoValidator</span> <span class="kd">implements</span> <span class="n">Validator</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">DateTime</span> <span class="n">minDate</span> <span class="o">=</span> <span class="n">DateTime</span><span class="o">.</span><span class="na">now</span><span class="o">().</span><span class="na">minusYears</span><span class="o">(</span><span class="mi">130</span><span class="o">);</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">DateTime</span> <span class="n">maxDate</span> <span class="o">=</span> <span class="n">DateTime</span><span class="o">.</span><span class="na">now</span><span class="o">().</span><span class="na">plusYears</span><span class="o">(</span><span class="mi">130</span><span class="o">);</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">supports</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">clazz</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">PersonPtoValidator</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">isAssignableFrom</span><span class="o">(</span><span class="n">clazz</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">validate</span><span class="o">(</span><span class="n">Object</span> <span class="n">target</span><span class="o">,</span> <span class="n">Errors</span> <span class="n">errors</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">ValidationUtils</span><span class="o">.</span><span class="na">rejectIfEmptyOrWhitespace</span><span class="o">(</span><span class="n">errors</span><span class="o">,</span> <span class="s">"name"</span><span class="o">,</span> <span class="s">"basicspring-err-null-value"</span><span class="o">);</span>
+        <span class="n">ValidationUtils</span><span class="o">.</span><span class="na">rejectIfEmptyOrWhitespace</span><span class="o">(</span><span class="n">errors</span><span class="o">,</span> <span class="s">"dateOfBirth"</span><span class="o">,</span> <span class="s">"basicspring-err-null-value"</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">errors</span><span class="o">.</span><span class="na">hasErrors</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">PersonPto</span> <span class="n">personPto</span> <span class="o">=</span> <span class="o">(</span><span class="n">PersonPto</span><span class="o">)</span> <span class="n">target</span><span class="o">;</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">personPto</span><span class="o">.</span><span class="na">getDateOfBirth</span><span class="o">().</span><span class="na">isBefore</span><span class="o">(</span><span class="n">minDate</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">errors</span><span class="o">.</span><span class="na">rejectValue</span><span class="o">(</span><span class="s">"dateOfBirth"</span><span class="o">,</span> <span class="s">"basicspring-err-to-early"</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">personPto</span><span class="o">.</span><span class="na">getDateOfBirth</span><span class="o">().</span><span class="na">isAfter</span><span class="o">(</span><span class="n">maxDate</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">errors</span><span class="o">.</span><span class="na">rejectValue</span><span class="o">(</span><span class="s">"dateOfBirth"</span><span class="o">,</span> <span class="s">"basicspring-err-to-late"</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+</pre></div>
+
+<ul>
+<li>Use validator in action.</li>
+</ul>
+<div class="highlight highlight-java"><pre>      <span class="n">personPtoValidator</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="n">personPto</span><span class="o">,</span><span class="n">result</span><span class="o">);</span>
+      <span class="k">if</span> <span class="o">(!</span><span class="n">result</span><span class="o">.</span><span class="na">hasErrors</span><span class="o">())</span> <span class="o">{</span>
+          <span class="n">response</span><span class="o">.</span><span class="na">setRenderParameter</span><span class="o">(</span><span class="n">PARAM_VIEW</span><span class="o">,</span> <span class="n">GREETING</span><span class="o">);</span>
+      <span class="o">}</span>
+</pre></div>
+
+<ul>
+<li>Add validation error message placeholders.</li>
+</ul>
+<div class="highlight highlight-jsp"><pre><span class="nt">&lt;form:errors</span> <span class="na">path=</span><span class="s">"name"</span>  <span class="na">element=</span><span class="s">"span"</span> <span class="na">cssClass=</span><span class="s">"${errorClass}"</span><span class="nt">/&gt;</span>
+</pre></div>
+</li>
+</ol>
         </section>
 
         <footer>
